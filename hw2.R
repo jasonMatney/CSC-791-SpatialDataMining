@@ -52,8 +52,11 @@ plot(kmeansraster)
 
 # Do model based clustering
 #
+num <- length(ILK) * 0.1
+ILK.samp = sampleRandom(ILK, num)
+
 g = 1:4
-ILK.mc <- Mclust(ILK[], G=g)
+ILK.mc <- Mclust(ILK.samp[], G=g)
 
 # Load cancer data
 cancer <- read.table("cancer-data.csv", sep=",", header=TRUE)
