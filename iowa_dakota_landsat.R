@@ -4,6 +4,8 @@ require(rgdal)
 require(raster)
 require(randomForest)
 library(tictoc)
+library(devtools)
+library(teamlucc)
 setwd("C:/Users/jamatney/Documents/CSC791")
 
 
@@ -140,3 +142,5 @@ varImpPlot(rf.mdl, type=1)
 # Predict model
 predict(xvars, rf.mdl, filename="RfClassPred.img", type="response", 
         index=1, na.rm=TRUE, progress="window", overwrite=TRUE)
+
+install_github('azvoleff/teamlucc', ref="development")
