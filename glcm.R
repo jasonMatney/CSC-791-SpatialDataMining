@@ -280,6 +280,10 @@ spDiag(m.1, start=burn.in)
 ##################
 ## Not run:
 require(raster)
+raster(L5TSR_1986, layer=1)
+par(mfrow=c(1,1))
+plotRGB(L5TSR_1986, 3, 2, 1, stretch='lin')
+
 # Calculate GLCM textures using default 90 degree shift
 textures_shift1 <- glcm(raster(L5TSR_1986, layer=1))
 plot(textures_shift1)
@@ -287,6 +291,7 @@ plot(textures_shift1)
 textures_all_dir <- glcm(raster(L5TSR_1986, layer=1),
                          shift=list(c(0,1), c(1,1), c(1,0), c(1,-1)))
 plot(textures_all_dir)
+
 ## End(Not run)
 
 
