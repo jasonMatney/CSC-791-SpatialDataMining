@@ -8,6 +8,27 @@ library(devtools)
 library(teamlucc)
 setwd("C:/Users/jamatney/Documents/CSC791")
 
+if (!require(doParallel)) {
+  install.packages('doParallel')
+  library(doParallel)
+}
+
+if (!require(gfcanalysis)) install.packages('gfcanalysis')
+
+registerDoParallel(2)
+
+set.seed(0) # Set a random seed so results match what we got earlier
+
+train_data_par <- get_pixels(L5TSR_1986, train_polys, class_col="class_1986", 
+                             training=.6)
+
+
+clfr_par <- train_classifier(train_data)
+
+cls_par <- classify(L5TSR_1986, clfr)
+
+tiles <- calc_gfc_tiles(aoi)
+print(length(tiles)) # Number of tiles needed to cover AOI
 
 ################################################################
 # CREATE LIST OF RASTERS
@@ -144,3 +165,4 @@ predict(xvars, rf.mdl, filename="RfClassPred.img", type="response",
         index=1, na.rm=TRUE, progress="window", overwrite=TRUE)
 
 install_github('azvoleff/teamlucc', ref="development")
+
