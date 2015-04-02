@@ -44,3 +44,5 @@ clfr_par <- train_classifier(train_data)
 cls_par <- classify(L5TSR_1986, clfr)
 spplot(cls_par$classes)
 spplot(cls_par$probs)
+
+###
