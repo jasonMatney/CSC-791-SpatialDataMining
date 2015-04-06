@@ -1,0 +1,1 @@
+R-gnu CMD Sweave predictive-process-spLM.Rnw && R-gnu CMD pdflatex predictive-process-spLM.tex && acroread predictive-process-spLM.pdf && R-gnu CMD Stangle predictive-process-spLM.Rnw
