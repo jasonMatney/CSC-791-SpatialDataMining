@@ -4,7 +4,6 @@
 ###################################################
 ### code chunk number 1: libs
 ###################################################
-rm(list=ls())
 options(width = 85) 
 library(yaImpute)
 library(spBayes)
@@ -13,14 +12,15 @@ library(geoR)
 library(fields)
 library(rgdal)
 library(RgoogleMaps)
-library(raster)
 library(glcm)
+library(raster)
 
 
-###################################################
+###################################################   
 ### code chunk number 2: coords
 ###################################################
 #get data
+setwd("/Users/jamatney/Desktop/exercise-5")
 PEF.shp <- readOGR("PEF-data","PEF-bounds")
 PEF.poly <- as.matrix(PEF.shp@polygons[[1]]@Polygons[[1]]@coords)
 
@@ -114,12 +114,17 @@ image.plot(z.2, xaxs = "r", yaxs = "r", xlab="", ylab="")
 image.plot(z.3, xaxs = "r", yaxs = "r", xlab="Easting (m)", ylab="Northing (m)")
 image.plot(z.4, xaxs = "r", yaxs = "r", xlab="Easting (m)", ylab="")
 
-
+# spg <- as.data.frame(cbind(lvis.coords, lvis[,3:153]))
+# colnames(spg) <- c("x","y")
+# coordinates(spg) <- ~ x + y
+# spg <- SpatialPixelsDataFrame(spg, tolerance=0.916421, spg@data)
+# rasterDF <- stack(spg)
 ###################################################
 ### code chunk number 7: Google
 ###################################################
 ##try and guess the different PCs using a Google image
 ##set shapefiel projection (missing .prj file)
+
 proj4string(PEF.shp) <- CRS("+proj=utm +zone=18 +ellps=WGS84 +datum=WGS84 +units=m +no_defs") ## set the projection
 PEF.shp.LL <- spTransform(PEF.shp, CRS("+proj=longlat")) ## reproject to lat/long
 
@@ -134,8 +139,22 @@ extent(img)=extent(bounds$ll[,2],bounds$ur[,2],bounds$ll[,1],bounds$ur[,1]) ## s
 plotRGB(img)
 plot(PEF.shp.LL, add = TRUE, border = "yellow", usePolypath = FALSE)
 
+cr <- coords
+colnames(cr) <- c("x","y")
+coordinates(cr) <- ~x+y
+proj4string(cr) <- CRS("+proj=utm +zone=18 +ellps=WGS84 +datum=WGS84 +units=m +no_defs") ## set the projection
+cr.LL <- spTransform(cr, CRS("+proj=longlat")) ## reproject to lat/long
 
+par(mfrow=(c(1,1)))
+tx <- glcm(raster(img, layer=1))
+dr <- unstack(tx)
+plot(dr[[1]])
+points(cr.LL,col='red')
 
+df <- extract(tx,cr.LL)
+PEF.df <- cbind(PEF.plots,df)
+write.csv(PEF.df,'PEF_df.csv',row.names=FALSE)
+a <- read.csv('PEF_df.csv',header=TRUE)
 ###################################################
 ### code chunk number 8: MBAResids
 ###################################################
@@ -275,28 +294,5 @@ m <- lm(bio ~ PEF.plots.Z)
 m.4 <- bayesLMRef(m, n.samples)
 spDiag(m.4, start=burn.in)
 spDiag(m.1, start=burn.in)
-
-##################
-### GLCM 
-##################
-## Not run:
-require(raster)
-raster(L5TSR_1986, layer=1)
-par(mfrow=c(1,1))
-plotRGB(img, 3, 2, 1, stretch='lin')
-
-plot(PEF.shp.LL, add = TRUE, border = "yellow", usePolypath = FALSE)
-
-# Calculate GLCM textures using default 90 degree shift
-textures_shift1 <- glcm(raster(img, layer=1))
-plot(textures_shift1)
-
-# Calculate GLCM textures over all directions
-textures_all_dir <- glcm(raster(img, layer=1),
-                         shift=list(c(0,1), c(1,1), c(1,0), c(1,-1)))
-
-plot(textures_all_dir)
-
-## End(Not run)
 
 
